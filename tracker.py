@@ -23,6 +23,7 @@ import time
 import argparse
 from pathlib import Path
 from datetime import datetime, date, timedelta
+from typing import Optional, Tuple
 
 TRACKER_DIR   = Path.home() / ".timetracker"
 PROJECTS_FILE = TRACKER_DIR / "projects.json"
@@ -98,7 +99,7 @@ def was_recently_modified(directory: str) -> bool:
     return False
 
 
-def find_project_for_cwd(cwd: str, projects: dict) -> str | None:
+def find_project_for_cwd(cwd: str, projects: dict) -> Optional[str]:
     """
     Return the tracked project path that best matches cwd.
     Supports exact matches and sub-directory matches.
@@ -115,7 +116,7 @@ def find_project_for_cwd(cwd: str, projects: dict) -> str | None:
     return None
 
 
-def require_project(cwd: str) -> tuple[str, dict]:
+def require_project(cwd: str) -> Tuple[str, dict]:
     """Exit with a helpful message if cwd isn't inside a tracked project."""
     projects = load_projects()
     project = find_project_for_cwd(cwd, projects)
@@ -129,7 +130,7 @@ def require_project(cwd: str) -> tuple[str, dict]:
 
 # ── Commands ──────────────────────────────────────────────────────────────────
 
-def cmd_add(path: str | None, cwd: str):
+def cmd_add(path: Optional[str], cwd: str):
     projects = load_projects()
     target = str(Path(path or cwd).resolve())
     if not Path(target).is_dir():
@@ -151,7 +152,7 @@ def cmd_add(path: str | None, cwd: str):
     print(f"  Data file: {TRACKER_DIR / (slug + '.json')}")
 
 
-def cmd_remove(path: str | None, cwd: str):
+def cmd_remove(path: Optional[str], cwd: str):
     projects = load_projects()
     if path:
         target = str(Path(path).resolve())
